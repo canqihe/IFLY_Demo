@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+
+    <EditText
+        android:id="@+id/result_edit"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/line2"
+        android:background="@null"
+        android:gravity="top"
+        android:padding="12dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24dp" />
+
+    <GridView
+        android:id="@+id/grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_below="@+id/result_edit"
+        android:layout_marginTop="10dp"
+        android:numColumns="2"
+        android:scrollbars="none" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/grid_view"
+        android:orientation="horizontal"
+        android:padding="34dp">
+
+        <TextView
+            android:id="@+id/upstairs"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_margin="5dp"
+            android:layout_weight="5"
+            android:background="@drawable/radius_font"
+            android:gravity="center"
+            android:text="UP"
+            android:textSize="22dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/downstairs"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_margin="5dp"
+            android:layout_weight="5"
+            android:background="@drawable/radius_font"
+            android:gravity="center"
+            android:text="DOWN"
+            android:textSize="22dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lin1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="34dp">
+
+        <Button
+            android:id="@+id/listen_write"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorAccent"
+            android:text="语音听写"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Button
+            android:id="@+id/voice_wake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="24dp"
+            android:background="@color/colorAccent"
+            android:text="语音唤醒"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/lin1"
+        android:background="#cccccc" />
+
+</RelativeLayout>
