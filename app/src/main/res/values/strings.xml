@@ -34,6 +34,7 @@
     <string name="wake_demo_hint">请点击“开始唤醒”后读出您在开放平台购买的唤醒词，当引擎计算得分大于您设置的门限值时，即可进行唤醒。</string>
     <string name="oneshot_demo_hint">请点击“唤醒+识别”后读出您在开放平台购买的唤醒词+语法中指定的识别对象，当引擎计算得分大于您设置的门限值时，即可进行唤醒+识别。</string>
     <string name="oneshot_resource_hint">本示例识别词语为“张三|李四|张海洋”，请开发者将语法文件中的唤醒词字段替换，本地语法定义详见demo工程的asset/wake.bnf文件。</string>
+    <string name="ttg_desc">呼叫 \"TiTiGo\" 唤醒电梯\n说出目标楼层\n例如：去6楼</string>
     <string-array name="voicer_cloud_entries">
         <item>小燕</item>
         <item>小宇</item>
@@ -78,22 +79,22 @@
         <item>小燕</item>
         <item>小峰</item>
     </string-array>
+    <!-- 语言 -->
     <string-array name="voicer_xtts_values">
         <item>xiaoyan</item>
         <item>xiaofeng</item>
     </string-array>
-    <!-- 语言 -->
     <string-array name="voicer_local_entries">
         <item>小燕</item>
         <item>小峰</item>
 
     </string-array>
+
+    <!-- 标点符号 -->
     <string-array name="voicer_local_values">
         <item>xiaoyan</item>
         <item>xiaofeng</item>
     </string-array>
-
-    <!-- 标点符号 -->
     <string-array name="stream_entries">
         <item>通话</item>
         <item>系统</item>
@@ -102,6 +103,8 @@
         <item>闹铃</item>
         <item>通知</item>
     </string-array>
+
+    <!-- 唤醒 -->
     <string-array name="stream_values">
         <item>0</item>
         <item>1</item>
@@ -110,8 +113,6 @@
         <item>4</item>
         <item>5</item>
     </string-array>
-
-    <!-- 唤醒 -->
     <string-array name="language_entries">
         <item>普通话</item>
         <item>粤语</item>
@@ -126,6 +127,7 @@
         <item>有标点</item>
         <item>无标点</item>
     </string-array>
+
     <string-array name="punc_values">
         <item>1</item>
         <item>0</item>

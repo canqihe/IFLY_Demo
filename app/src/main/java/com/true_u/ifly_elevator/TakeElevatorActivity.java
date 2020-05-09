@@ -10,10 +10,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iflytek.cloud.ErrorCode;
@@ -43,14 +42,24 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.true_u.ifly_elevator.util.ShowUtils.getTime;
 
 public class TakeElevatorActivity extends AppCompatActivity {
 
     private final static String TAG = TakeElevatorActivity.class.getSimpleName();
     // 默认本地发音人
     public static String voicerXtts = "xiaoyan";
+    @BindView(R.id.time)
+    TextView time;
+    @BindView(R.id.time_date)
+    TextView timeDate;
     // 语音识别对象
     private SpeechRecognizer mVoiceRecognition;
     // 本地语法文件
@@ -62,7 +71,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
     private String mResultType = "json";
 
     private GridView gridView;
-    private EditText conTx;
+    private TextView conTx;
 
     private int curThresh = 1450;
     private String keep_alive = "1";
@@ -80,6 +89,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
     private String mContent;// 语法、词典临时变量
     private int ret = 0;// 函数调用返回值
     private int trust, floorNum;
+    private Timer timer;
 
     private List<Integer> list = new ArrayList<>();
 
@@ -88,8 +98,9 @@ public class TakeElevatorActivity extends AppCompatActivity {
     @SuppressLint("ShowToast")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        ShowUtils.NavigationBarStatusBar(this, true);
         setContentView(R.layout.activity_take_elevator);
+        ButterKnife.bind(this);
         initLayout();
 
         // 初始化识别对象
@@ -105,6 +116,21 @@ public class TakeElevatorActivity extends AppCompatActivity {
         setVoiceParam();//设置语音朗读参数
         voiceWake(); //保持唤醒监听
 
+        timer = new Timer();
+        timer.schedule(new RemindTask(), 0, 1000);
+        timeDate.setText(ShowUtils.getDate() + "\n" + ShowUtils.dateToWeek(ShowUtils.getDate()));
+    }
+
+
+    class RemindTask extends TimerTask {
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    time.setText(getTime());
+                }
+            });
+        }
     }
 
     /**
@@ -178,7 +204,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
 
         @Override
         public void onError(SpeechError error) {
-            Log.d("recognizer result onError Code：", error.getErrorCode() + "");
+            Log.d("recognizer result ", error.getErrorCode() + "");
             //此时唤醒器已经撤退
             voiceWake();//继续监听唤醒
         }
@@ -324,11 +350,11 @@ public class TakeElevatorActivity extends AppCompatActivity {
      */
     public void buildGramer() {
         mContent = new String(mLocalGrammar);
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.PARAMS, null);
+        mVoiceRecognition.setParameter(SpeechConstant.PARAMS, null);
         // 设置文本编码格式
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.TEXT_ENCODING, "utf-8");
+        mVoiceRecognition.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
         // 设置引擎类型
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.ENGINE_TYPE, mEngineType);
+        mVoiceRecognition.setParameter(SpeechConstant.ENGINE_TYPE, mEngineType);
         // 设置语法构建路径
         mVoiceRecognition.setParameter(ResourceUtil.GRM_BUILD_PATH, grmPath);
         // 设置资源路径
@@ -360,21 +386,21 @@ public class TakeElevatorActivity extends AppCompatActivity {
      */
     public boolean setParam() {
         // 清空参数
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.PARAMS, null);
+        mVoiceRecognition.setParameter(SpeechConstant.PARAMS, null);
         // 设置识别引擎
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.ENGINE_TYPE, mEngineType);
+        mVoiceRecognition.setParameter(SpeechConstant.ENGINE_TYPE, mEngineType);
         // 设置本地识别资源
         mVoiceRecognition.setParameter(ResourceUtil.ASR_RES_PATH, getResourcePath());
         // 设置语法构建路径
         mVoiceRecognition.setParameter(ResourceUtil.GRM_BUILD_PATH, grmPath);
         // 设置返回结果格式
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.RESULT_TYPE, mResultType);
+        mVoiceRecognition.setParameter(SpeechConstant.RESULT_TYPE, mResultType);
         // 设置本地识别使用语法id
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.LOCAL_GRAMMAR, "take");
+        mVoiceRecognition.setParameter(SpeechConstant.LOCAL_GRAMMAR, "take");
         // 设置识别的门限值
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.MIXED_THRESHOLD, "30");
+        mVoiceRecognition.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
-        mVoiceRecognition.setParameter(com.iflytek.cloud.SpeechConstant.AUDIO_FORMAT, "wav");
+        mVoiceRecognition.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mVoiceRecognition.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/asr.wav");
         return true;
     }
@@ -513,6 +539,9 @@ public class TakeElevatorActivity extends AppCompatActivity {
             mVoiceRecognition.destroy();
             mVoiceRecognition.cancel();
         }
+        if (timer != null) timer.cancel();
+
+        startActivity(new Intent(this, TakeElevatorActivity.class));
 
     }
 

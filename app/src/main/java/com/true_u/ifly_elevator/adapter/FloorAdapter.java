@@ -2,6 +2,7 @@ package com.true_u.ifly_elevator.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,9 @@ import com.true_u.ifly_elevator.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.RequiresApi;
+import androidx.cardview.widget.CardView;
 
 /**
  * Created by Colin
@@ -47,6 +51,7 @@ public class FloorAdapter extends BaseAdapter {
         return i;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         ViewHolder holder = null;
@@ -54,17 +59,20 @@ public class FloorAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_floor, null);
             holder = new ViewHolder();
             holder.text = convertView.findViewById(R.id.floor);
+            holder.cardView = convertView.findViewById(R.id.cardview);
             holder.relativeLayout = convertView.findViewById(R.id.rel);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.text.setText((position + 1) + "");
+        holder.cardView.setBackground(context.getDrawable(R.drawable.radius_font));
         if (mList.size() != 0) {
             for (int i = 0; i < mList.size(); i++) {
                 if (mList.get(i) - 1 == position) {
-                    holder.text.setTextColor(Color.parseColor("#f44336"));
-//                    holder.text.setShadowLayer(5, 0, 0, Color.parseColor("#f44336"));
+                    holder.text.setTextColor(Color.parseColor("#ff6510"));
+                    holder.cardView.setBackground(context.getDrawable(R.drawable.radius_floor));
+//                    holder.text.setShadowLayer(5, 0, 0, Color.parseColor("#ff6510"));
                 }
             }
         }
@@ -74,5 +82,6 @@ public class FloorAdapter extends BaseAdapter {
     class ViewHolder {
         TextView text;
         RelativeLayout relativeLayout;
+        CardView cardView;
     }
 }

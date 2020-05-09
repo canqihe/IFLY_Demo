@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.true_u.ifly_elevator">
     <!-- 连接网络权限，用于执行云端语音能力 -->
     <application
@@ -10,14 +11,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.true_u.ifly_elevator.TakeElevatorActivity"></activity>
-        <activity android:name="com.true_u.ifly_elevator.MainActivity">
+        <activity
+            android:name="com.true_u.ifly_elevator.TakeElevatorActivity"
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.true_u.ifly_elevator.MainActivity"
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity"></activity>
     </application> <!-- 获取手机录音机使用权限，听写、识别、语义理解需要用到此权限 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 读取网络信息状态 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 获取当前wifi状态 -->
@@ -29,7 +36,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 配置权限，用来记录应用配置信息 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 手机定位信息，用来为语义等功能提供定位，提供更精准的服务 -->
     <!-- 定位信息是敏感信息，可通过Setting.setLocationEnable(false)关闭定位请求 -->
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" /> <!-- 如需使用人脸识别，还要添加：摄相头权限，拍照需要用到 -->
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" /> <!-- 如需使用人脸识别，还要添加：摄相头权限，拍照需要用到 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-permission android:name="android.permission.CAMERA" />

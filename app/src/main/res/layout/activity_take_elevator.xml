@@ -1,30 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#e5e5e5"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:padding="10dp">
-
-    <EditText
-        android:id="@+id/isr_text"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="2"
-        android:background="@null"
-        android:gravity="top|left"
-        android:padding="5dp"
-        android:textSize="20sp" />
+    android:orientation="horizontal">
 
     <GridView
         android:id="@+id/grid_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="8"
-        android:numColumns="4"
-        android:scrollbars="none" />
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="40dp"
+        android:layout_weight="7"
+        android:numColumns="6"
+        android:scrollbars="none"
+        android:verticalSpacing="10dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:background="@android:color/transparent"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="40dp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white">
+
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginRight="50dp"
+                    android:layout_marginBottom="25dp"
+                    android:src="@mipmap/ttg_logo" />
+
+                <TextView
+                    android:id="@+id/isr_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/img"
+                    android:layout_gravity="bottom"
+                    android:background="#ff6510"
+                    android:gravity="center_vertical"
+                    android:lineSpacingExtra="8dp"
+                    android:padding="15dp"
+                    android:text="@string/ttg_desc"
+                    android:textColor="@android:color/white"
+                    android:textSize="30dp" />
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="40dp"
+            android:background="@android:color/white"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp">
+
+                <TextView
+                    android:id="@+id/bjt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="北京时间"
+                    android:textColor="#ff6510"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/bjt"
+                    android:gravity="center_vertical"
+                    android:text="15:46:09"
+                    android:textColor="#999999"
+                    android:textSize="50dp" />
+
+                <TextView
+                    android:id="@+id/time_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/time"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/time"
+                    android:lineSpacingExtra="5dp"
+                    android:paddingBottom="10dp"
+                    android:text="2020.01.01\n星期日"
+                    android:textColor="#999999"
+                    android:textSize="18dp" />
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
 
 </LinearLayout>
