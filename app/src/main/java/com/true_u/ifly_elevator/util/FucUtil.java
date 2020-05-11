@@ -69,4 +69,16 @@ public class FucUtil {
         return floor;
     }
 
+    public static int getFloor(String lou) {
+        int floor = 0;
+        if (lou.equals("负一")) floor = -1;
+        if (lou.equals("负二")) floor = -2;
+        if (lou.equals("负三")) floor = -3;
+        if (lou.equals("负四")) floor = -4;
+        if (lou.equals("负五")) floor = -5;
+        if (lou.equals("负六")) floor = -6;
+        if (lou.equals("负七")) floor = -7;
+        return floor;
+    }
+
 }

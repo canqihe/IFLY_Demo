@@ -8,12 +8,13 @@ package com.true_u.ifly_elevator.util;
  */
 public class ChineseNumToArabicNumUtil {
 
-    static char[] cnArr = new char [] {'一','二','三','四','五','六','七','八','九'};
-    static char[] chArr = new char [] {'十','百','千','万','亿'};
+    static char[] cnArr = new char[]{'一', '二', '三', '四', '五', '六', '七', '八', '九'};
+    static char[] chArr = new char[]{'十', '百', '千', '万', '亿'};
     static String allChineseNum = "零一二三四五六七八九十百千万亿";
 
     /**
      * 将汉字中的数字转换为阿拉伯数字
+     *
      * @param chineseNum
      * @return
      */
@@ -26,7 +27,7 @@ public class ChineseNumToArabicNumUtil {
             char c = chineseNum.charAt(i);
             for (int j = 0; j < cnArr.length; j++) {//非单位，即数字
                 if (c == cnArr[j]) {
-                    if(0 != count){//添加下一个单位之前，先把上一个单位值添加到结果中
+                    if (0 != count) {//添加下一个单位之前，先把上一个单位值添加到结果中
                         result += temp;
                         temp = 1;
                         count = 0;
@@ -37,7 +38,7 @@ public class ChineseNumToArabicNumUtil {
                     break;
                 }
             }
-            if(b){//单位{'十','百','千','万','亿'}
+            if (b) {//单位{'十','百','千','万','亿'}
                 for (int j = 0; j < chArr.length; j++) {
                     if (c == chArr[j]) {
                         switch (j) {

@@ -3,6 +3,7 @@ package com.true_u.ifly_elevator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -40,13 +41,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import hugo.weaving.DebugLog;
 
-@DebugLog
 public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.listen_write)
@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
      */
     String floorNum = "0";
     private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener() {
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onResult(RecognizerResult results, boolean isLast) {
 
             Log.d("命令结果UI", results.getResultString());

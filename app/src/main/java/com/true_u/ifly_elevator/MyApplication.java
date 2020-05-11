@@ -13,11 +13,14 @@ import com.iflytek.cloud.SpeechUtility;
 public class MyApplication extends Application {
 
 
-    public static MyApplication instance;
+    public static volatile MyApplication instance;
 
     public synchronized static MyApplication getInstance() {
         if (instance == null) {
-            instance = new MyApplication();
+            synchronized (MyApplication.class) {
+                if (instance == null)
+                    instance = new MyApplication();
+            }
         }
         return instance;
     }

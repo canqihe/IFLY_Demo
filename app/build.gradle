@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.jakewharton.hugo'
 
 android {
     compileSdkVersion 28
@@ -49,7 +48,8 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     implementation files('libs/commons-lang3-3.1.jar')
-
     implementation 'androidx.cardview:cardview:1.0.0'
+
+    implementation 'com.github.F1ReKing:Android-SerialPort:1.5.1'
 
 }
