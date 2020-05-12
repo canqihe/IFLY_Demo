@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         setVoiceParam();//设置语音朗读参数
         voiceWake(); //保持唤醒监听
 
-        floorAdapter = new FloorAdapter(MainActivity.this, list, 5);
+//        floorAdapter = new FloorAdapter(MainActivity.this, list, 5);
         gridView.setAdapter(floorAdapter);
 
     }
@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             list.add(FucUtil.getNum(floorNum));
-            gridView.setAdapter(new FloorAdapter(MainActivity.this, list, 5));
+//            gridView.setAdapter(new FloorAdapter(MainActivity.this, list, 5));
             Log.d("floors:", floorNum);
 
             if (text.indexOf("upstairs") != -1 || text.indexOf("Upstairs") != -1) {

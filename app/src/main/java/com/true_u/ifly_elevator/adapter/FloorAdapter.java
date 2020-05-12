@@ -27,23 +27,23 @@ import androidx.cardview.widget.CardView;
 public class FloorAdapter extends BaseAdapter {
     private Context context;
     private List<Integer> mList = new ArrayList();
-    private int floors;
+    private List<Integer> floorList = new ArrayList();
 
-    public FloorAdapter(Context context, List<Integer> list, int floors) {
+    public FloorAdapter(Context context, List<Integer> list, List<Integer> floorList) {
         this.context = context;
         this.mList = list;
-        this.floors = floors;
+        this.floorList = floorList;
     }
 
 
     @Override
     public int getCount() {
-        return floors;
+        return mList.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return i;
+        return mList.get(i);
     }
 
     @Override
@@ -65,17 +65,18 @@ public class FloorAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.text.setText((position + 1) + "");
+        holder.text.setText(mList.get(position) + "");
         holder.cardView.setBackground(context.getDrawable(R.drawable.radius_font));
-        if (mList.size() != 0) {
-            for (int i = 0; i < mList.size(); i++) {
-                if (mList.get(i) - 1 == position) {
+
+        if (floorList.size() != 0) {
+            for (int i = 0; i < floorList.size(); i++) {
+                if (floorList.get(i) == mList.get(position)) {
                     holder.text.setTextColor(Color.parseColor("#ff6510"));
                     holder.cardView.setBackground(context.getDrawable(R.drawable.radius_floor));
-//                    holder.text.setShadowLayer(5, 0, 0, Color.parseColor("#ff6510"));
                 }
             }
         }
+
         return convertView;
     }
 

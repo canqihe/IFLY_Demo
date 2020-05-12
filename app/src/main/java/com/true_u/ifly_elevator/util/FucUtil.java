@@ -1,6 +1,15 @@
 package com.true_u.ifly_elevator.util;
 
 import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.VoiceWakeuper;
+import com.iflytek.cloud.util.ResourceUtil;
+import com.true_u.ifly_elevator.MyApplication;
+import com.true_u.ifly_elevator.R;
+import com.true_u.ifly_elevator.TakeElevatorActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,5 +89,6 @@ public class FucUtil {
         if (lou.equals("负七")) floor = -7;
         return floor;
     }
+
 
 }

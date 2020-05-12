@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundWaveView">
+        <attr name="pointCount" format="integer" />
+        <attr name="useAnimation" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="UniversalMediaController"><attr format="boolean" name="uvv_scalable"/></declare-styleable>
+    <declare-styleable name="UniversalVideoView"><attr format="boolean" name="uvv_fitXY"/></declare-styleable>
+</resources>

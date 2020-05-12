@@ -2,6 +2,7 @@ package com.true_u.ifly_elevator;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ import com.true_u.ifly_elevator.adapter.FloorAdapter;
 import com.true_u.ifly_elevator.util.ChineseNumToArabicNumUtil;
 import com.true_u.ifly_elevator.util.FucUtil;
 import com.true_u.ifly_elevator.util.ShowUtils;
+import com.true_u.ifly_elevator.util.SiriWaveView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -65,6 +67,19 @@ public class TakeElevatorActivity extends AppCompatActivity {
     public static String voicerXtts = "xiaoyan";
     @BindView(R.id.time)
     TextView time;
+
+    @BindView(R.id.isr_text)
+    TextView voiceText;
+
+    @BindView(R.id.grid_view)
+    GridView gridView;
+
+    @BindView(R.id.siri_wave_view)
+    SiriWaveView siriWaveView;
+
+//    @BindView(R.id.videoView)
+//    UniversalVideoView mVideoView;
+
     // 语音识别对象
     private SpeechRecognizer mVoiceRecognition;
     // 本地语法文件
@@ -75,12 +90,12 @@ public class TakeElevatorActivity extends AppCompatActivity {
     // 返回结果格式，支持：xml,json
     private String mResultType = "json";
 
-    private GridView gridView;
-    private TextView conTx;
-
     private int curThresh = 1450;
     private String keep_alive = "1";
     private String ivwNetMode = "0";
+
+    private int lowFloor = -5;
+    private int highFloor = 30;
 
     // 语音唤醒对象
     private VoiceWakeuper mWake;
@@ -96,10 +111,13 @@ public class TakeElevatorActivity extends AppCompatActivity {
     private int trust, floorNum;
     private Timer timer;
     private List<Integer> list = new ArrayList<>();
+    private List<Integer> floorList = new ArrayList<>();
     private FloorAdapter floorAdapter;
     private SerialPortHelper mSerialPortHelper;
+    //没有匹配结果次数
+    private int recognitionCount;
 
-    private String[] deviceArr;
+    private String videoPath;
 
     @SuppressLint("ShowToast")
     public void onCreate(Bundle savedInstanceState) {
@@ -108,7 +126,6 @@ public class TakeElevatorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_take_elevator);
         ButterKnife.bind(this);
         initLayout();
-
         // 初始化识别对象
         mVoiceRecognition = SpeechRecognizer.createRecognizer(this, mInitListener);
         mLocalGrammar = FucUtil.readFile(this, "take.bnf", "utf-8");
@@ -123,10 +140,22 @@ public class TakeElevatorActivity extends AppCompatActivity {
         voiceWake(); //保持唤醒监听
         openPort();//打开串口
 
-//        getAllDevice();
-
         timer = new Timer();
         timer.schedule(new RemindTask(), 0, 1000);
+
+       /* videoPath = "android.resource://" + getPackageName() + "/" + R.raw.trump;
+        mVideoView.setVideoPath(videoPath);
+        mVideoView.start();
+
+        //重播
+        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mVideoView.setVideoPath(videoPath);
+                mVideoView.start();
+            }
+        });*/
+
     }
 
 
@@ -135,22 +164,31 @@ public class TakeElevatorActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    time.setText(getTime() + "  " + ShowUtils.getDate() + "\n" + ShowUtils.dateToWeek(ShowUtils.getDate()));
+                    time.setText(getTime() + "  " + ShowUtils.getDate() + " " + ShowUtils.dateToWeek(ShowUtils.getDate()));
                 }
             });
         }
     }
 
 
+    //初始化楼层
+    public void newFloor() {
+        for (int i = lowFloor; i < 0; i++) {
+            list.add(i);
+        }
+        for (int i = 1; i <= highFloor; i++) {
+            list.add(i);
+        }
+
+        floorAdapter = new FloorAdapter(TakeElevatorActivity.this, list, floorList);
+        gridView.setAdapter(floorAdapter);
+    }
+
     /**
      * 初始化Layout
      */
     private void initLayout() {
-        conTx = findViewById(R.id.isr_text);
-        gridView = findViewById(R.id.grid_view);
-
-        floorAdapter = new FloorAdapter(TakeElevatorActivity.this, list, 30);
-        gridView.setAdapter(floorAdapter);
+        newFloor();
     }
 
 
@@ -162,6 +200,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
         @Override
         public void onVolumeChanged(int volume, byte[] data) {
             Log.d(TAG, "结果：当前正在说话，音量大小：" + volume);
+            siriWaveView.setVolume(volume);
 //            Log.d(TAG, "返回音频数据：" + data.length);
         }
 
@@ -178,20 +217,17 @@ public class TakeElevatorActivity extends AppCompatActivity {
                     text = result.getResultString();
                 }*/
                 floorNum = parseJson(result);
-
                 if (trust > 20) {//置信度大于20
-
                     //发送串口数据
                     sendPortMsg(floorNum);
-
                     mTts.startSpeaking("好的，" + floorNum + "楼", mTtsListener);
-                    conTx.setText("好的，" + floorNum + "楼");
-                    list.add(floorNum);
+                    voiceText.setText("好的，" + floorNum + "楼");
+                    floorList.add(floorNum);
                     floorAdapter.notifyDataSetChanged();
 
                 } else {
-                    mTts.startSpeaking("请说出目标楼层！", mTtsListener);
-                    conTx.setText("请说出目标楼层！");
+                    mTts.startSpeaking("没听清，再说一次", mTtsListener);
+                    voiceText.setText("没听清，再说一次");
                 }
             } else {
                 Log.d(TAG, "结果： null");
@@ -200,21 +236,27 @@ public class TakeElevatorActivity extends AppCompatActivity {
 
         @Override
         public void onEndOfSpeech() {
-            // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
-            Log.d("recognizer result结束说话:", "");
+            Log.d("结果：结束说话。。。", "");
+            siriWaveView.stopAnim();
+            voiceText.setBackgroundColor(Color.parseColor("#ff6510"));
         }
 
         @Override
         public void onBeginOfSpeech() {
-            // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
-            Log.d("recognizer result开始说话:", "");
+            Log.d("结果：开始说话！", "");
         }
 
         @Override
         public void onError(SpeechError error) {
             Log.d("结果：没有匹配结果", error.getErrorCode() + "");
-            conTx.setText(R.string.ttg_desc);
-            voiceWake();//继续监听唤醒
+            recognitionCount++;
+            if (recognitionCount < 3) {
+                startRecognize();
+            } else {
+                mTts.startSpeaking("我先离开，稍后回来", null);
+                voiceWake();//继续监听唤醒
+                recognitionCount = 0;
+            }
         }
 
         @Override
@@ -236,7 +278,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
                 mWake.stopListening();
 
             int code = mTts.startSpeaking("我在呢", mTtsListener);
-            conTx.setText("我在呢");
+            voiceText.setText("我在呢");
 
             if (code != ErrorCode.SUCCESS) {
                 ShowUtils.showToast(TakeElevatorActivity.this, "语音合成失败,错误码: " + code + ",请点击网址https://www.xfyun.cn/document/error-code查询解决方案");
@@ -307,7 +349,6 @@ public class TakeElevatorActivity extends AppCompatActivity {
                     mWake.stopListening();
                 //开始识别命令
                 startRecognize();
-
             } else if (error != null) {
                 ShowUtils.showToast(TakeElevatorActivity.this, error.getPlainDescription(true));
             }
@@ -434,7 +475,13 @@ public class TakeElevatorActivity extends AppCompatActivity {
             showTip("请先构建语法。");
             return;
         }
+
+        siriWaveView.startAnim();
+        voiceText.setBackgroundColor(Color.parseColor("#222222"));
+        voiceText.setText("");
+
         ret = mVoiceRecognition.startListening(mRecognizerListener);
+
         if (ret != ErrorCode.SUCCESS) {
             showTip("识别失败,错误码: " + ret + ",请点击网址https://www.xfyun.cn/document/error-code查询解决方案");
         }
@@ -491,6 +538,8 @@ public class TakeElevatorActivity extends AppCompatActivity {
         mVoiceRecognition.setParameter(ResourceUtil.GRM_BUILD_PATH, grmPath);
         // 设置返回结果格式
         mVoiceRecognition.setParameter(SpeechConstant.RESULT_TYPE, mResultType);
+        //语音输入超时时间 设置录取音频的最长时间
+        mVoiceRecognition.setParameter(SpeechConstant.KEY_SPEECH_TIMEOUT, "200000");
         // 设置本地识别使用语法id
         mVoiceRecognition.setParameter(SpeechConstant.LOCAL_GRAMMAR, "take");
         // 设置识别的门限值
@@ -508,6 +557,8 @@ public class TakeElevatorActivity extends AppCompatActivity {
     public void voiceWake() {
 //        mWake = VoiceWakeuper.getWakeuper();
         Log.d(TAG, "结果：进入唤醒状态！ ");
+
+        voiceText.setText(R.string.ttg_desc);
         if (mWake != null) {
             // 清空参数
             mWake.setParameter(SpeechConstant.PARAMS, null);
@@ -611,23 +662,6 @@ public class TakeElevatorActivity extends AppCompatActivity {
                 Toast.makeText(TakeElevatorActivity.this, str, Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    /***
-     * 获取所有串口
-     */
-    public void getAllDevice() {
-        try {
-            StringBuffer sb = new StringBuffer();
-            deviceArr = mSerialPortHelper.getAllDeicesPath();
-            for (int i = 0; i < deviceArr.length; i++) {
-                sb.append(deviceArr[i] + "\n");
-            }
-            Log.d(TAG, "结果：所有串口地址：" + sb.toString());
-        } catch (Exception e) {
-            Log.d(TAG, "结果：所有串口地址：" + e.toString());
-            e.printStackTrace();
-        }
     }
 
     @Override

@@ -50,6 +50,10 @@ dependencies {
     implementation files('libs/commons-lang3-3.1.jar')
     implementation 'androidx.cardview:cardview:1.0.0'
 
+    //串口通信
     implementation 'com.github.F1ReKing:Android-SerialPort:1.5.1'
+
+    //视频播放器
+    implementation 'com.linsea:universalvideoview:1.0.0@aar'
 
 }
