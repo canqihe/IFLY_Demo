@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.true_u.ifly_elevator.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.RequiresApi;
@@ -22,12 +21,11 @@ import androidx.cardview.widget.CardView;
  * Created by Colin
  * on 2020/4/27
  * E-mail: hecanqi168@gmail.com
- * Copyright (C) 2018 SSZB, Inc.
  */
 public class FloorAdapter extends BaseAdapter {
     private Context context;
-    private List<Integer> mList = new ArrayList();
-    private List<Integer> floorList = new ArrayList();
+    private List<Integer> mList;
+    private List<Integer> floorList;
 
     public FloorAdapter(Context context, List<Integer> list, List<Integer> floorList) {
         this.context = context;

@@ -1,15 +1,8 @@
 package com.true_u.ifly_elevator.util;
 
 import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
-
-import com.iflytek.cloud.SpeechConstant;
-import com.iflytek.cloud.VoiceWakeuper;
-import com.iflytek.cloud.util.ResourceUtil;
-import com.true_u.ifly_elevator.MyApplication;
-import com.true_u.ifly_elevator.R;
-import com.true_u.ifly_elevator.TakeElevatorActivity;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,19 +42,21 @@ public class FucUtil {
         try {
             InputStream ins = context.getAssets().open(filename);
             byte[] data = new byte[ins.available()];
-
             ins.read(data);
             ins.close();
-
             return data;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
         return null;
     }
 
+
+    /***
+     * 英文楼层
+     * @param num
+     * @return
+     */
     public static int getNum(String num) {
         int floor = 0;
         if (num.equals("First") || num.equals("first"))
@@ -78,6 +73,28 @@ public class FucUtil {
         return floor;
     }
 
+
+    /***
+     * 拿到楼层
+     * @param lou
+     * @return
+     */
+    public static int getLouceng(String lou) {
+        int floor = 0;
+        //拿到楼层
+        if (lou.indexOf("负") != -1) {
+            floor = FucUtil.getFloor(lou);
+        } else {
+            floor = ChineseNumToArabicNumUtil.chineseNumToArabicNum(lou);
+        }
+        return floor;
+    }
+
+    /***
+     * 楼层
+     * @param lou
+     * @return
+     */
     public static int getFloor(String lou) {
         int floor = 0;
         if (lou.equals("负一")) floor = -1;
@@ -86,8 +103,60 @@ public class FucUtil {
         if (lou.equals("负四")) floor = -4;
         if (lou.equals("负五")) floor = -5;
         if (lou.equals("负六")) floor = -6;
-        if (lou.equals("负七")) floor = -7;
         return floor;
+    }
+
+
+    /***
+     * 负楼层转换
+     * @param lou
+     * @return
+     */
+    public static int getMinusFloor(int lou) {
+        int floor = 0;
+        if (lou == -1) floor = 80;
+        if (lou == -2) floor = 81;
+        if (lou == -3) floor = 82;
+        if (lou == -4) floor = 83;
+        if (lou == -5) floor = 84;
+        if (lou == -6) floor = 85;
+        return floor;
+    }
+
+    /**
+     * 返回当前程序版本号
+     */
+    public static int getAppVersionCode(Context context) {
+        int versionCode = 0;
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
+            versionCode = pi.versionCode;
+            if (versionCode == 0) {
+                return 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionCode;
+    }
+
+    /**
+     * 返回当前程序版本名
+     */
+    public static String getAppVersionName(Context context) {
+        String versionName = "";
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
+            versionName = pi.versionName;
+            if (versionName == null) {
+                return "";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return versionName;
     }
 
 
