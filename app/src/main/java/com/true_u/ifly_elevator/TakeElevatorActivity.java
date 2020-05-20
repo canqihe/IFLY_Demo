@@ -396,12 +396,14 @@ public class TakeElevatorActivity extends AppCompatActivity {
             @Override
             public void onDataReceived(byte[] bytes) {
                 Log.d("打印-串口数据", "onDataReceived: " + HexUtils.byteArrToHex(bytes));
+
+                list.clear();
+
+                list = HexUtils.getDataNum(bytes);
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i) == 0) {
-                        list.remove(i);
-                    }
+                    Log.e("打印-接收的楼层：", list.get(i) + "楼");
                 }
-                floorAdapter.notifyDataSetChanged();
+                // floorAdapter.notifyDataSetChanged();
             }
 
             //发送数据回调
@@ -652,7 +654,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    time.setText(ShowUtils.getTime() + "  " + ShowUtils.getDate() + " " + ShowUtils.dateToWeek(ShowUtils.getDate()));
+                    time.setText(ShowUtils.getTime() + " " + ShowUtils.dateToWeek(ShowUtils.getDate()));
                 }
             });
 

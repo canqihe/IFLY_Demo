@@ -11,17 +11,18 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="top"
-        android:layout_marginTop="10dp"
-        android:layout_weight="0.5">
+        android:layout_height="wrap_content"
+        android:paddingLeft="45dp"
+        android:paddingRight="75dp"
+        android:paddingTop="35dp"
+        android:paddingBottom="35dp"
+        android:layout_gravity="top">
 
         <ImageView
             android:id="@+id/img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="-100dp"
             android:src="@mipmap/ttg_logo" />
 
         <TextView
@@ -30,11 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="30dp"
             android:singleLine="true"
-            android:text="15:46:09 2020.05.09 星期六"
-            android:textColor="#999999"
-            android:textSize="24dp" />
+            android:text="15:46:09 星期六"
+            android:textColor="@color/theme_orange"
+            android:textSize="38dp" />
 
     </RelativeLayout>
 
@@ -43,7 +43,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="35dp"
-        android:layout_marginTop="35dp"
         android:layout_marginRight="35dp"
         android:layout_weight="8"
         android:numColumns="6"
@@ -69,12 +68,12 @@
                 android:id="@+id/isr_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#ff6510"
-                android:lineSpacingExtra="8dp"
+                android:background="@color/theme_orange"
+                android:lineSpacingExtra="14dp"
                 android:padding="26dp"
                 android:text="@string/ttg_desc"
                 android:textColor="@android:color/white"
-                android:textSize="44dp" />
+                android:textSize="64dp" />
 
             <com.true_u.ifly_elevator.util.SiriWaveView
                 android:id="@+id/siri_wave_view"
@@ -105,7 +104,6 @@
 
         </RelativeLayout>
     </LinearLayout>
-
 
 
 </LinearLayout>

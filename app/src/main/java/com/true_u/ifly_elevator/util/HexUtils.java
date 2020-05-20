@@ -1,5 +1,8 @@
 package com.true_u.ifly_elevator.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Colin
  * on 2020/5/11
@@ -48,6 +51,7 @@ public class HexUtils {
 
     /**
      * 字符串转化成为16进制字符串
+     *
      * @param s
      * @return
      */
@@ -86,4 +90,54 @@ public class HexUtils {
         }
         return hex;
     }
+
+    public static List<Integer> getDataNum( byte[] bytes) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < bytes[2] - 1; j++) {
+                if (bytes[3 + bytes[2] - j] % 2 == 1) list.add(i + 1 + j * 8);
+                bytes[3 + bytes[2] - j] = (byte) (bytes[3 + bytes[2] - j] >> 1);
+            }
+        }
+        return list;
+    }
+
+
+   /* public static List<Integer> getDataNum(int highFloor, byte[] bytes) {
+        List<Integer> list = new ArrayList<>();
+
+        highFloor = (bytes[2] - 1) * 8;
+
+        for (int i = 0; i < 8; i++) {
+            if (highFloor > 0) {
+                if (bytes[3 + bytes[2]] % 2 == 1) list.add(i + 1);
+                bytes[10] = (byte) (bytes[10] >> 1);
+//                bytes[10] = (byte) (bytes[10] / 2);
+            }
+            if (highFloor > 8) {
+                if (bytes[9] % 2 == 1) list.add(i + 1);
+                bytes[9] = (byte) (bytes[9] >> 1);
+            }
+            if (highFloor > 16) {
+                if (bytes[8] % 2 == 1) list.add(i + 1);
+                bytes[8] = (byte) (bytes[8] >> 1);
+            }
+            if (highFloor > 24) {
+                if (bytes[7] % 2 == 1) list.add(i + 1);
+                bytes[7] = (byte) (bytes[7] >> 1);
+            }
+            if (highFloor > 32) {
+                if (bytes[6] % 2 == 1) list.add(i + 1);
+                bytes[6] = (byte) (bytes[6] >> 1);
+            }
+            if (highFloor > 40) {
+                if (bytes[5] % 2 == 1) list.add(i + 1);
+                bytes[5] = (byte) (bytes[5] >> 1);
+            }
+
+        }
+        return list;
+
+    }*/
+
 }
