@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        setVoiceParam();//设置语音朗读参数
+        setVoiceParam();//设置语音合成参数
         voiceWake(); //保持唤醒监听
 
 //        floorAdapter = new FloorAdapter(MainActivity.this, list, 5);

@@ -188,8 +188,8 @@ public class TakeElevatorActivity extends AppCompatActivity {
                 floorNum = parseJson(result);//解析json
                 if (trust > 30) {//置信度大于30
                     sendPortMsg(floorNum); //发送串口数据
-                    mTts.startSpeaking("好的，" + floorNum + "楼", mTtsListener);
-                    voiceText.setText("好的，" + floorNum + "楼");
+                    mTts.startSpeaking(floorNum + "楼", mTtsListener);
+                    voiceText.setText(floorNum + "楼");
                     floorList.add(floorNum);
                     floorAdapter.notifyDataSetChanged();
                 } else {
@@ -244,10 +244,11 @@ public class TakeElevatorActivity extends AppCompatActivity {
             if (mWake.isListening())
                 mWake.stopListening();
 
-            int code = mTts.startSpeaking("我在呢", mTtsListener);
-            voiceText.setText("我在呢");
-            if (code != ErrorCode.SUCCESS)
-                ShowUtils.showToast(TakeElevatorActivity.this, "语音合成失败,错误码: " + code + ",请点击网址https://www.xfyun.cn/document/error-code查询解决方案");
+//            int code = mTts.startSpeaking("我在呢", mTtsListener);
+//            voiceText.setText("我在呢");
+
+            //开始识别命令
+            startRecognize();
         }
 
         @Override
@@ -395,6 +396,12 @@ public class TakeElevatorActivity extends AppCompatActivity {
             @Override
             public void onDataReceived(byte[] bytes) {
                 Log.d("打印-串口数据", "onDataReceived: " + HexUtils.byteArrToHex(bytes));
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i) == 0) {
+                        list.remove(i);
+                    }
+                }
+                floorAdapter.notifyDataSetChanged();
             }
 
             //发送数据回调
@@ -442,7 +449,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
 
         siriWaveView.startAnim();
         voiceText.setBackgroundColor(Color.parseColor("#000000"));
-        voiceText.setText("");
+        voiceText.setText("请继续\n我在听...");
 
         ret = mVoiceRecognition.startListening(mRecognizerListener);
 
