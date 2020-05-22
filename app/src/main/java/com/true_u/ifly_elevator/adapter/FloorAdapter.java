@@ -23,25 +23,35 @@ import androidx.cardview.widget.CardView;
  * E-mail: hecanqi168@gmail.com
  */
 public class FloorAdapter extends BaseAdapter {
-    private Context context;
-    private List<Integer> mList;
-    private List<Integer> floorList;
+    Context context;
+    List<Integer> mList;
+    List<Integer> floorList;
+    int Devflag;//0设备 1串口
 
-    public FloorAdapter(Context context, List<Integer> list, List<Integer> floorList) {
+    public FloorAdapter(Context context) {
         this.context = context;
+    }
+
+    public void updateData(List<Integer> list, List<Integer> floorList, int flag) {
         this.mList = list;
         this.floorList = floorList;
+        this.Devflag = flag;
     }
 
 
     @Override
     public int getCount() {
-        return mList.size();
+        if (mList != null)
+            return mList.size();
+        else return 0;
     }
 
     @Override
     public Object getItem(int i) {
-        return mList.get(i);
+        if (mList != null && mList.size() > i) {
+            return mList.get(i);
+        }
+        return null;
     }
 
     @Override
@@ -64,13 +74,23 @@ public class FloorAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.text.setText(mList.get(position) + "");
+        holder.text.setTextColor(Color.parseColor("#666666"));
         holder.cardView.setBackground(context.getDrawable(R.drawable.radius_font));
 
         if (floorList.size() != 0) {
-            for (int i = 0; i < floorList.size(); i++) {
-                if (floorList.get(i) == mList.get(position)) {
-                    holder.text.setTextColor(Color.parseColor("#ff6510"));
-                    holder.cardView.setBackground(context.getDrawable(R.drawable.radius_floor));
+            if (Devflag == 0) {
+                for (int i = 0; i < floorList.size(); i++) {
+                    if (floorList.get(i) == mList.get(position)) {
+                        holder.text.setTextColor(Color.parseColor("#ff6510"));
+                        holder.cardView.setBackground(context.getDrawable(R.drawable.radius_floor));
+                    }
+                }
+            } else {
+                for (int i = 0; i < floorList.size(); i++) {
+                    if (floorList.get(i) == position) {
+                        holder.text.setTextColor(Color.parseColor("#ff6510"));
+                        holder.cardView.setBackground(context.getDrawable(R.drawable.radius_floor));
+                    }
                 }
             }
         }

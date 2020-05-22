@@ -91,7 +91,13 @@ public class HexUtils {
         return hex;
     }
 
-    public static List<Integer> getDataNum( byte[] bytes) {
+
+    /***
+     * 接受串口数据转换
+     * @param bytes
+     * @return
+     */
+    public static List<Integer> getDataNum(byte[] bytes) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < bytes[2] - 1; j++) {

@@ -26,7 +26,7 @@
                 android:layout_margin="5dp"
                 android:text="1"
                 android:textColor="#666666"
-                android:textSize="54dp" />
+                android:textSize="58dp" />
 
         </androidx.cardview.widget.CardView>
     </RelativeLayout>

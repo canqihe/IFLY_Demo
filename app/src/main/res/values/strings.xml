@@ -26,7 +26,7 @@
 
     <string name="pref_key_translate">translate</string>
     <string name="pref_title_translate">翻译</string>
-    <string name="default_response">我是小白，请讲..</string>
+    <string name="default_response">我是梯梯够，请讲..</string>
 
     <!-- 合成 -->
     <string name="tts_toast_format" formatted="false">缓冲进度为%d%%，播放进度为%d%%</string>
@@ -34,7 +34,7 @@
     <string name="wake_demo_hint">请点击“开始唤醒”后读出您在开放平台购买的唤醒词，当引擎计算得分大于您设置的门限值时，即可进行唤醒。</string>
     <string name="oneshot_demo_hint">请点击“唤醒+识别”后读出您在开放平台购买的唤醒词+语法中指定的识别对象，当引擎计算得分大于您设置的门限值时，即可进行唤醒+识别。</string>
     <string name="oneshot_resource_hint">本示例识别词语为“张三|李四|张海洋”，请开发者将语法文件中的唤醒词字段替换，本地语法定义详见demo工程的asset/wake.bnf文件。</string>
-    <string name="ttg_desc">呼叫 \"小白小白\" 唤醒电梯\n说出目标楼层\n例如：去6楼</string>
+    <string name="ttg_desc">呼叫 \"梯梯够\" 唤醒电梯\n说出目标楼层\n例如：去6楼</string>
     <string-array name="voicer_cloud_entries">
         <item>小燕</item>
         <item>小宇</item>

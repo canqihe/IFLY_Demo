@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,6 +70,9 @@ public class TakeElevatorActivity extends AppCompatActivity {
     @BindView(R.id.isr_text)
     TextView voiceText;
 
+    @BindView(R.id.floor_num_text)
+    TextView floorNumText;
+
     @BindView(R.id.grid_view)
     GridView gridView;
 
@@ -114,6 +118,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
     private SerialPortHelper mSerialPortHelper;
     //没有匹配结果次数
     private int recognitionCount;
+    private int trustFailCount;
 
     private String videoPath;
 
@@ -165,8 +170,9 @@ public class TakeElevatorActivity extends AppCompatActivity {
         for (int i = 1; i <= highFloor; i++) {
             list.add(i);
         }
-        floorAdapter = new FloorAdapter(TakeElevatorActivity.this, list, floorList);
+        floorAdapter = new FloorAdapter(TakeElevatorActivity.this);
         gridView.setAdapter(floorAdapter);
+        floorAdapter.updateData(list, floorList, 0);
     }
 
 
@@ -177,24 +183,38 @@ public class TakeElevatorActivity extends AppCompatActivity {
 
         @Override
         public void onVolumeChanged(int volume, byte[] data) {
-            Log.d(TAG, "打印-当前正在说话，音量大小：" + volume);
+            Log.d(TAG, "当前正在说话，音量大小：" + volume);
             siriWaveView.setVolume(volume);
         }
 
         @Override
         public void onResult(final RecognizerResult result, boolean isLast) {
             if (null != result && !TextUtils.isEmpty(result.getResultString())) {
-                Log.d(TAG, "打印-JSON" + result.getResultString());
+                Log.d(TAG, "JSON解析-" + result.getResultString());
                 floorNum = parseJson(result);//解析json
                 if (trust > 30) {//置信度大于30
+                    trustFailCount = 0;
                     sendPortMsg(floorNum); //发送串口数据
                     mTts.startSpeaking(floorNum + "楼", mTtsListener);
-                    voiceText.setText(floorNum + "楼");
+//                    voiceText.setText(floorNum + "楼");
+                    voiceText.setVisibility(View.INVISIBLE);
+                    floorNumText.setVisibility(View.VISIBLE);
+                    floorNumText.setText(floorNum + "楼");
                     floorList.add(floorNum);
+                    floorAdapter.updateData(list, floorList, 0);
                     floorAdapter.notifyDataSetChanged();
                 } else {
-                    mTts.startSpeaking("没听清，再说一次", mTtsListener);
-                    voiceText.setText("没听清，再说一次");
+                    floorNumText.setVisibility(View.INVISIBLE);
+                    trustFailCount++;
+                    if (trustFailCount <= 3) {
+                        voiceText.setVisibility(View.VISIBLE);
+                        mTts.startSpeaking("没听清。", mTtsListener);
+                        voiceText.setText("没听清。");
+                    } else {
+                        trustFailCount = 0;
+                        mTts.startSpeaking("我先离开，稍后回来", null);
+                        voiceWake();//继续监听唤醒
+                    }
                 }
             } else {
                 Log.d(TAG, "打印- null");
@@ -220,9 +240,9 @@ public class TakeElevatorActivity extends AppCompatActivity {
             if (recognitionCount < 3) {
                 startRecognize();
             } else {
+                recognitionCount = 0;
                 mTts.startSpeaking("我先离开，稍后回来", null);
                 voiceWake();//继续监听唤醒
-                recognitionCount = 0;
             }
         }
 
@@ -370,6 +390,11 @@ public class TakeElevatorActivity extends AppCompatActivity {
         mSerialPortHelper.setParity(PARITY.getParity(PARITY.NONE));
         mSerialPortHelper.setFlowCon(FLOWCON.getFlowCon(FLOWCON.NONE));
 
+        /*String[] paths = mSerialPortHelper.getAllDeicesPath();
+        for (int i = 0; i < mSerialPortHelper.getAllDeicesPath().length; i++) {
+            Log.e("打印-串口列表：", paths[i] + "");
+        }*/
+
         mSerialPortHelper.setIOpenSerialPortListener(new IOpenSerialPortListener() {
             @Override
             public void onSuccess(final File device) {
@@ -395,21 +420,28 @@ public class TakeElevatorActivity extends AppCompatActivity {
             //接收数据回调
             @Override
             public void onDataReceived(byte[] bytes) {
-                Log.d("打印-串口数据", "onDataReceived: " + HexUtils.byteArrToHex(bytes));
-
-                list.clear();
-
-                list = HexUtils.getDataNum(bytes);
-                for (int i = 0; i < list.size(); i++) {
-                    Log.e("打印-接收的楼层：", list.get(i) + "楼");
+                Log.d("打印-串口数据", "接收回调: " + HexUtils.byteArrToHex(bytes));
+                for (int i = 0; i < bytes.length; i++) Log.d("打印-bytes", i + "：" + bytes[i]);
+                if (bytes[0] == -91) {
+                    floorList.clear();
+                    floorList = HexUtils.getDataNum(bytes);
+                    for (int i = 0; i < floorList.size(); i++) {
+                        Log.e("打印-接收的串口数据：", "下标-" + floorList.get(i));
+                    }
+                    TakeElevatorActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            floorAdapter.updateData(list, floorList, 1);
+                            floorAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
-                // floorAdapter.notifyDataSetChanged();
             }
 
             //发送数据回调
             @Override
             public void onDataSend(byte[] bytes) {
-                Log.d("打印-串口数据", "onDataSend: " + Arrays.toString(bytes));
+                Log.d("打印-串口数据", "发送回调: " + Arrays.toString(bytes));
             }
         });
         Log.d("打印-串口数据", "open: " + mSerialPortHelper.open());
@@ -449,10 +481,11 @@ public class TakeElevatorActivity extends AppCompatActivity {
             return;
         }
 
+        floorNumText.setVisibility(View.INVISIBLE);
         siriWaveView.startAnim();
         voiceText.setBackgroundColor(Color.parseColor("#000000"));
         voiceText.setText("请继续\n我在听...");
-
+        voiceText.setVisibility(View.VISIBLE);
         ret = mVoiceRecognition.startListening(mRecognizerListener);
 
         if (ret != ErrorCode.SUCCESS) {
@@ -530,6 +563,8 @@ public class TakeElevatorActivity extends AppCompatActivity {
 //        mWake = VoiceWakeuper.getWakeuper();
         Log.d(TAG, "打印-进入唤醒状态！ ");
 
+        floorNumText.setVisibility(View.INVISIBLE);
+        voiceText.setVisibility(View.VISIBLE);
         voiceText.setText(R.string.ttg_desc);
         voiceText.setBackgroundColor(Color.parseColor("#ff6510"));
         if (mWake != null) {
@@ -627,6 +662,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Toast.makeText(TakeElevatorActivity.this, str, Toast.LENGTH_SHORT).show();
+                voiceText.setText(str);
             }
         });
     }
