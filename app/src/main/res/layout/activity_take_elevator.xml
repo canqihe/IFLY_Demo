@@ -92,7 +92,7 @@
                 android:lineSpacingExtra="14dp"
                 android:text="0楼"
                 android:textColor="@android:color/white"
-                android:textSize="164dp" />
+                android:textSize="168dp" />
             <!-- <FrameLayout
                  android:id="@+id/video_layout"
                  android:layout_width="fill_parent"

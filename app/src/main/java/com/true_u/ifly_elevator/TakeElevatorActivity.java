@@ -486,6 +486,7 @@ public class TakeElevatorActivity extends AppCompatActivity {
         voiceText.setBackgroundColor(Color.parseColor("#000000"));
         voiceText.setText("请继续\n我在听...");
         voiceText.setVisibility(View.VISIBLE);
+
         ret = mVoiceRecognition.startListening(mRecognizerListener);
 
         if (ret != ErrorCode.SUCCESS) {
