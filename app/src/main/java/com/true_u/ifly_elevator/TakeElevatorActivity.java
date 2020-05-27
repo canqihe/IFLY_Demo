@@ -1,5 +1,6 @@
 package com.true_u.ifly_elevator;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,8 +60,10 @@ import me.f1reking.serialportlib.entity.STOPB;
 import me.f1reking.serialportlib.listener.IOpenSerialPortListener;
 import me.f1reking.serialportlib.listener.ISerialPortDataListener;
 import me.f1reking.serialportlib.listener.Status;
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
 
-public class TakeElevatorActivity extends AppCompatActivity {
+public class TakeElevatorActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     private final static String TAG = TakeElevatorActivity.class.getSimpleName();
     // 默认本地发音人
@@ -122,26 +126,37 @@ public class TakeElevatorActivity extends AppCompatActivity {
 
     private String videoPath;
 
+
+    private String[] mPerms = {Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_PHONE_STATE};
+
+
     @SuppressLint("ShowToast")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ShowUtils.NavigationBarStatusBar(this, true);//全屏模式
         setContentView(R.layout.activity_take_elevator);
         ButterKnife.bind(this);
+
         //初始化楼层
         newFloor();
-        // 初始化识别对象
-        mVoiceRecognition = SpeechRecognizer.createRecognizer(this, mInitListener);
-        mLocalGrammar = FucUtil.readFile(this, "take.bnf", "utf-8");
-        //构筑语法
-        buildGramer();
-        // 初始化唤醒对象
-        mWake = VoiceWakeuper.createWakeuper(this, mInitListener);
-        // 初始化合成对象
-        mTts = SpeechSynthesizer.createSynthesizer(this, mInitListener);
-        setVoiceParam();//设置语音朗读参数
-        voiceWake(); //保持唤醒监听
-        openPort();//打开串口
+
+        if (!EasyPermissions.hasPermissions(this, mPerms)) {
+            EasyPermissions.requestPermissions(
+                    new PermissionRequest.Builder(this, 0, mPerms)
+                            .setRationale("在这里我们要打开一些必要权限，以供APP正常运行！")
+                            .setPositiveButtonText("好的")
+                            .setNegativeButtonText("取消")
+                            .build());
+        } else {
+            createVoice();
+        }
+
         //时间
         timer = new Timer();
         timer.schedule(new RemindTask(), 0, 1000);
@@ -160,6 +175,25 @@ public class TakeElevatorActivity extends AppCompatActivity {
                 mVideoView.start();
             }
         });*/
+
+
+    }
+
+
+    //初始化语音模块
+    public void createVoice() {
+        // 初始化识别对象
+        mVoiceRecognition = SpeechRecognizer.createRecognizer(this, mInitListener);
+        mLocalGrammar = FucUtil.readFile(this, "take.bnf", "utf-8");
+        //构筑语法
+        buildGramer();
+        // 初始化唤醒对象
+        mWake = VoiceWakeuper.createWakeuper(this, mInitListener);
+        // 初始化合成对象
+        mTts = SpeechSynthesizer.createSynthesizer(this, mInitListener);
+        setVoiceParam();//设置语音朗读参数
+        voiceWake(); //保持唤醒监听
+        openPort();//打开串口
     }
 
     //初始化楼层
@@ -260,10 +294,6 @@ public class TakeElevatorActivity extends AppCompatActivity {
         @Override
         public void onResult(WakeuperResult result) {
             Log.d(TAG, "打印-onResult：" + result.getResultString());
-
-            if (mWake.isListening())
-                mWake.stopListening();
-
 //            int code = mTts.startSpeaking("我在呢", mTtsListener);
 //            voiceText.setText("我在呢");
 
@@ -330,9 +360,6 @@ public class TakeElevatorActivity extends AppCompatActivity {
         public void onCompleted(SpeechError error) {
             if (error == null) {
                 Log.d(TAG, "打印-播放完成！");
-                //关闭唤醒监听
-                if (mWake.isListening())
-                    mWake.stopListening();
                 //开始识别命令
                 startRecognize();
             } else if (error != null) {
@@ -475,6 +502,9 @@ public class TakeElevatorActivity extends AppCompatActivity {
 
 
     public void startRecognize() {
+        //关闭唤醒监听
+        if (mWake.isListening())
+            mWake.stopListening();
         // 设置参数
         if (!setParam()) {
             showTip("请先构建语法。");
@@ -683,6 +713,25 @@ public class TakeElevatorActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    //权限回调
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        createVoice();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        Toast.makeText(TakeElevatorActivity.this, "权限不足，无法正常使用", Toast.LENGTH_SHORT).show();
+        TakeElevatorActivity.this.finish();
     }
 
 
