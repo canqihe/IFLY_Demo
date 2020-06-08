@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,6 +63,9 @@ import me.f1reking.serialportlib.listener.ISerialPortDataListener;
 import me.f1reking.serialportlib.listener.Status;
 import pub.devrel.easypermissions.EasyPermissions;
 import pub.devrel.easypermissions.PermissionRequest;
+
+import static com.true_u.ifly_elevator.util.Constant.BAUD_RATE;
+import static com.true_u.ifly_elevator.util.Constant.PORT_ADDRESS;
 
 public class TakeElevatorActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
@@ -126,7 +130,6 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
 
     private String videoPath;
 
-
     private String[] mPerms = {Manifest.permission.RECORD_AUDIO,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -146,16 +149,11 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
         //初始化楼层
         newFloor();
 
-        if (!EasyPermissions.hasPermissions(this, mPerms)) {
-            EasyPermissions.requestPermissions(
-                    new PermissionRequest.Builder(this, 0, mPerms)
-                            .setRationale("在这里我们要打开一些必要权限，以供APP正常运行！")
-                            .setPositiveButtonText("好的")
-                            .setNegativeButtonText("取消")
-                            .build());
-        } else {
+        //权限管理
+        if (!EasyPermissions.hasPermissions(this, mPerms))
+            EasyPermissions.requestPermissions(new PermissionRequest.Builder(this, 0, mPerms).build());
+        else
             createVoice();
-        }
 
         //时间
         timer = new Timer();
@@ -209,7 +207,6 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
         floorAdapter.updateData(list, floorList, 0);
     }
 
-
     /**
      * 识别监听器。
      */
@@ -230,8 +227,9 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
                     trustFailCount = 0;
                     sendPortMsg(floorNum); //发送串口数据
                     mTts.startSpeaking(floorNum + "楼", mTtsListener);
-//                    voiceText.setText(floorNum + "楼");
+                    voiceText.setText(floorNum + "楼");
                     voiceText.setVisibility(View.INVISIBLE);
+
                     floorNumText.setVisibility(View.VISIBLE);
                     floorNumText.setText(floorNum + "楼");
                     floorList.add(floorNum);
@@ -410,8 +408,8 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
      */
     public void openPort() {
         mSerialPortHelper = new SerialPortHelper();
-        mSerialPortHelper.setPort("/dev/ttyS4");
-        mSerialPortHelper.setBaudRate(115200);
+        mSerialPortHelper.setPort(PORT_ADDRESS);
+        mSerialPortHelper.setBaudRate(BAUD_RATE);
         mSerialPortHelper.setStopBits(STOPB.getStopBit(STOPB.B1));
         mSerialPortHelper.setDataBits(DATAB.getDataBit(DATAB.CS8));
         mSerialPortHelper.setParity(PARITY.getParity(PARITY.NONE));
@@ -472,7 +470,6 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
             }
         });
         Log.d("打印-串口数据", "open: " + mSerialPortHelper.open());
-
     }
 
 
@@ -555,6 +552,8 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
                 showTip("初始化失败,错误码：" + code + ",请点击网址https://www.xfyun.cn/document/error-code查询解决方案");
             }
         }
+
+        PriorityQueue qq = new PriorityQueue();
     };
 
 
