@@ -35,6 +35,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.Toast;
 
 import com.true_u.ifly_elevator.R;
@@ -217,6 +218,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                     if (mappedRecognitions.get(i).getTitle().equals("人")) {
                         r.play();
 //                        vibrator.vibrate(1000);
+                        showView(true);
+                    } else {
+                        showView(false);
                     }
                 }
 
@@ -225,13 +229,17 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
                 computingDetection = false;
 
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        showFrameInfo(previewWidth + "x" + previewHeight);
-                        showCropInfo(cropCopyBitmap.getWidth() + "x" + cropCopyBitmap.getHeight());
-                        showInference(lastProcessingTimeMs + "ms");
-                    }
-                });
+            }
+        });
+    }
+
+    public void showView(boolean flag) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (flag)
+                    linearLayout.setVisibility(View.INVISIBLE);
+                else linearLayout.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -251,13 +259,5 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         TF_OD_API;
     }
 
-    @Override
-    protected void setUseNNAPI(final boolean isChecked) {
-        runInBackground(() -> detector.setUseNNAPI(isChecked));
-    }
 
-    @Override
-    protected void setNumThreads(final int numThreads) {
-        runInBackground(() -> detector.setNumThreads(numThreads));
-    }
 }
