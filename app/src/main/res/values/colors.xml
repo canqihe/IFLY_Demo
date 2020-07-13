@@ -7,4 +7,5 @@
     <color name="blue">#2979ff</color>
     <color name="theme_orange">#ff6510</color>
 
+    <color name="tfe_semi_transparent">#66000000</color>
 </resources>

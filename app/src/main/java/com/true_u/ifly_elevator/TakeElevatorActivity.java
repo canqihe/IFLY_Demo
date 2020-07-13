@@ -106,7 +106,6 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
 
     private int lowFloor = -5;
     private int highFloor = 30;
-
     // 语音唤醒对象
     private VoiceWakeuper mWake;
     // 语音合成对象
@@ -325,33 +324,33 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
         }
     };
 
-    /**
-     * 合成回调监听。
-     */
-    private SynthesizerListener mTtsListener = new SynthesizerListener() {
-        @Override
-        public void onSpeakBegin() {
-            Log.d("开始播放", "开始播放：" + System.currentTimeMillis());
-        }
+            /**
+             * 合成回调监听。
+             */
+            private SynthesizerListener mTtsListener = new SynthesizerListener() {
+                @Override
+                public void onSpeakBegin() {
+                    Log.d("开始播放", "开始播放：" + System.currentTimeMillis());
+                }
 
-        @Override
-        public void onSpeakPaused() {
-            ShowUtils.showToast(TakeElevatorActivity.this, "暂停播放");
-        }
+                @Override
+                public void onSpeakPaused() {
+                    ShowUtils.showToast(TakeElevatorActivity.this, "暂停播放");
+                }
 
-        @Override
-        public void onSpeakResumed() {
-            ShowUtils.showToast(TakeElevatorActivity.this, "继续播放");
-        }
+                @Override
+                public void onSpeakResumed() {
+                    ShowUtils.showToast(TakeElevatorActivity.this, "继续播放");
+                }
 
-        @Override
-        public void onBufferProgress(int percent, int beginPos, int endPos, String info) {
-            // 合成进度
-        }
+                @Override
+                public void onBufferProgress(int percent, int beginPos, int endPos, String info) {
+                    // 合成进度
+                }
 
-        @Override
-        public void onSpeakProgress(int percent, int beginPos, int endPos) {
-            // 播放进度
+                @Override
+                public void onSpeakProgress(int percent, int beginPos, int endPos) {
+                    // 播放进度
         }
 
         @Override
@@ -559,7 +558,6 @@ public class TakeElevatorActivity extends AppCompatActivity implements EasyPermi
 
     /**
      * 识别参数设置
-     *
      * @return
      */
     public boolean setParam() {
