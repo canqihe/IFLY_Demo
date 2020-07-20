@@ -39,6 +39,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.true_u.ifly_elevator.R;
+import com.zhouyou.http.EasyHttp;
+import com.zhouyou.http.callback.SimpleCallBack;
+import com.zhouyou.http.exception.ApiException;
 
 import androidx.annotation.RequiresApi;
 import tensorflow.customview.OverlayView;
@@ -145,6 +148,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         });
 
         tracker.setFrameConfiguration(previewWidth, previewHeight, sensorOrientation);
+
     }
 
     @Override
@@ -193,17 +197,16 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                         break;
                 }
 
-                final List<Classifier.Recognition> mappedRecognitions = new LinkedList<Classifier.Recognition>();
+                final List<Classifier.Recognition> mappedRecognitions = new LinkedList<>();
 
                 for (final Classifier.Recognition result : results) {
                     final RectF location = result.getLocation();
                     if (location != null && result.getConfidence() >= minimumConfidence) {
                         canvas.drawRect(location, paint);
-
                         cropToFrameTransform.mapRect(location);
-
                         result.setLocation(location);
-                        mappedRecognitions.add(result);
+                        if (result.getTitle().equals("人"))
+                            mappedRecognitions.add(result);
                     }
                 }
 
@@ -211,18 +214,19 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
-                for (int i = 0; i < mappedRecognitions.size(); i++) {
-                    Log.d("识别物体名称", mappedRecognitions.get(i).getTitle()
-                            + "\n 置信度：" + (mappedRecognitions.get(i).getConfidence() * 100) + "%");
+//                for (int i = 0; i < mappedRecognitions.size(); i++) {
+//                    Log.d("识别物体名称", mappedRecognitions.get(i).getTitle()
+//                            + "\n 置信度：" + (mappedRecognitions.get(i).getConfidence() * 100) + "%");
 
-                    if (mappedRecognitions.get(i).getTitle().equals("人")) {
-                        r.play();
+//                    if (mappedRecognitions.get(i).getTitle().equals("人")) {
+                if (mappedRecognitions.size() > 0) {
+                    r.play();
 //                        vibrator.vibrate(1000);
-                        showView(true);
-                    } else {
-                        showView(false);
-                    }
+                    showView(true);
+                } else {
+                    showView(false);
                 }
+//                }
 
                 tracker.trackResults(mappedRecognitions, currTimestamp);
                 trackingOverlay.postInvalidate();

@@ -54,10 +54,14 @@ import com.iflytek.cloud.WakeuperResult;
 import com.true_u.ifly_elevator.R;
 import com.true_u.ifly_elevator.ValueAct;
 import com.true_u.ifly_elevator.adapter.FloorAdapter;
+import com.true_u.ifly_elevator.bean.FloorBean;
 import com.true_u.ifly_elevator.util.FucUtil;
 import com.true_u.ifly_elevator.util.HexUtils;
 import com.true_u.ifly_elevator.util.ShowUtils;
 import com.true_u.ifly_elevator.util.SiriWaveView;
+import com.zhouyou.http.EasyHttp;
+import com.zhouyou.http.callback.SimpleCallBack;
+import com.zhouyou.http.exception.ApiException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -96,6 +100,7 @@ public abstract class CameraActivity extends ValueAct implements OnImageAvailabl
     private int yRowStride;
     private Runnable postInferenceCallback;
     private Runnable imageConverter;
+    private List<FloorBean.DataBean> dataBeans;
 
     @BindView(R.id.time)
     TextView time;
@@ -138,9 +143,8 @@ public abstract class CameraActivity extends ValueAct implements OnImageAvailabl
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//屏幕常亮
         setContentView(R.layout.tfe_od_activity_camera);
         ButterKnife.bind(this);
-        setFragment();
-        //初始化楼层
-        newFloor();
+
+//        setFragment(); //设置物体检测
 
         //权限管理
         if (!EasyPermissions.hasPermissions(this, mPerms))
@@ -151,11 +155,13 @@ public abstract class CameraActivity extends ValueAct implements OnImageAvailabl
         //时间
         timer = new Timer();
         timer.schedule(new RemindTask(), 0, 1000);
+
     }
 
 
     //初始化语音模块
     public void initVoiceModel() {
+        newFloor();//初始化楼层
         createVoice();
         setVoiceParam();//设置语音朗读参数
         startVoiceWake(); //保持唤醒监听
@@ -164,15 +170,27 @@ public abstract class CameraActivity extends ValueAct implements OnImageAvailabl
 
     //初始化楼层
     public void newFloor() {
-        for (int i = lowFloor; i < 0; i++) {
-            list.add(i);
-        }
-        for (int i = 1; i <= highFloor; i++) {
-            list.add(i);
-        }
         floorAdapter = new FloorAdapter(CameraActivity.this);
-        gridView.setAdapter(floorAdapter);
-        floorAdapter.updateData(list, floorList, 0);
+        EasyHttp.get("/elevator-web/elevator/showtable/getFloor")
+                .baseUrl("http://192.168.0.110:8080")
+                .params("plotDetailId", "7")
+                .timeStamp(false)
+                .execute(new SimpleCallBack<String>() {
+                    @Override
+                    public void onError(ApiException e) {
+                        Log.e("楼层Error", e.toString());
+                    }
+
+                    @Override
+                    public void onSuccess(String jsonStirng) {
+                        FloorBean floorData = com.alibaba.fastjson.JSONObject.parseObject(jsonStirng, FloorBean.class);
+                        dataBeans = floorData.getData();
+                        if (dataBeans.size() == 0) return;
+                        gridView.setAdapter(floorAdapter);
+                        floorAdapter.updateData(dataBeans, floorList, 0);
+                    }
+                });
+
     }
 
     protected int[] getRgbBytes() {
@@ -207,7 +225,7 @@ public abstract class CameraActivity extends ValueAct implements OnImageAvailabl
                     floorNumText.setVisibility(View.VISIBLE);
                     floorNumText.setText(floorNum + "楼");
                     floorList.add(floorNum);
-                    floorAdapter.updateData(list, floorList, 0);
+                    floorAdapter.updateData(dataBeans, floorList, 0);
                     floorAdapter.notifyDataSetChanged();
                 } else {
                     floorNumText.setVisibility(View.INVISIBLE);
@@ -431,7 +449,7 @@ public abstract class CameraActivity extends ValueAct implements OnImageAvailabl
             CameraActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    floorAdapter.updateData(list, floorList, 1);
+                    floorAdapter.updateData(dataBeans, floorList, 1);
                     floorAdapter.notifyDataSetChanged();
                 }
             });
@@ -516,7 +534,7 @@ public abstract class CameraActivity extends ValueAct implements OnImageAvailabl
         if (timer != null) timer.cancel();//关闭计时器
         closePort();//关闭串口
 
-        startActivity(new Intent(this, CameraActivity.class));
+        startActivity(new Intent(this, DetectorActivity.class));
 
     }
 

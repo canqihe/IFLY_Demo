@@ -148,13 +148,6 @@ public class ValueAct extends AppCompatActivity {
      * 唤醒参数
      */
     public void voiceWakeValue() {
-//        mWake = VoiceWakeuper.getWakeuper();
-//        Log.d(TAG, "打印-进入唤醒状态！ ");
-
-//        floorNumText.setVisibility(View.INVISIBLE);
-//        voiceText.setVisibility(View.VISIBLE);
-//        voiceText.setText(R.string.ttg_desc);
-//        voiceText.setBackgroundColor(Color.parseColor("#ff6510"));
         if (mWake != null) {
             // 清空参数
             mWake.setParameter(SpeechConstant.PARAMS, null);
@@ -171,7 +164,6 @@ public class ValueAct extends AppCompatActivity {
             // 设置唤醒录音保存路径，保存最近一分钟的音频
             mWake.setParameter(SpeechConstant.IVW_AUDIO_PATH, Environment.getExternalStorageDirectory().getPath() + "/msc/ivw.wav");
             mWake.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-//            mWake.startListening(mWakeuperListener);
         } else {
             ShowUtils.showToast(ValueAct.this, "唤醒未初始化");
         }

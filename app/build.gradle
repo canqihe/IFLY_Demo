@@ -67,5 +67,9 @@ dependencies {
     implementation('org.tensorflow:tensorflow-lite:0.0.0-nightly') { changing = true }
 
     implementation 'com.google.android.material:material:1.0.0'
+    //网络库 封装RXjava2+Retrofit+okhttp
+    implementation 'com.zhouyou:rxeasyhttp:2.1.5'
+    //fastJson
+    implementation 'com.alibaba:fastjson:1.2.61'
 
 }

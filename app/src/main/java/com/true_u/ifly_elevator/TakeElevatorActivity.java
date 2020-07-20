@@ -129,7 +129,7 @@ public class TakeElevatorActivity extends ValueAct implements EasyPermissions.Pe
         }
         floorAdapter = new FloorAdapter(TakeElevatorActivity.this);
         gridView.setAdapter(floorAdapter);
-        floorAdapter.updateData(list, floorList, 0);
+//        floorAdapter.updateData(list, floorList, 0);
     }
 
     /**
@@ -158,7 +158,7 @@ public class TakeElevatorActivity extends ValueAct implements EasyPermissions.Pe
                     floorNumText.setVisibility(View.VISIBLE);
                     floorNumText.setText(floorNum + "楼");
                     floorList.add(floorNum);
-                    floorAdapter.updateData(list, floorList, 0);
+//                    floorAdapter.updateData(list, floorList, 0);
                     floorAdapter.notifyDataSetChanged();
                 } else {
                     floorNumText.setVisibility(View.INVISIBLE);
@@ -382,7 +382,7 @@ public class TakeElevatorActivity extends ValueAct implements EasyPermissions.Pe
             TakeElevatorActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    floorAdapter.updateData(list, floorList, 1);
+//                    floorAdapter.updateData(list, floorList, 1);
                     floorAdapter.notifyDataSetChanged();
                 }
             });

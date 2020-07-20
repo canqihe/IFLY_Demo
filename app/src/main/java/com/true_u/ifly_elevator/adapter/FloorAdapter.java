@@ -11,7 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.true_u.ifly_elevator.R;
+import com.true_u.ifly_elevator.bean.FloorBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.RequiresApi;
@@ -24,32 +26,32 @@ import androidx.cardview.widget.CardView;
  */
 public class FloorAdapter extends BaseAdapter {
     Context context;
-    List<Integer> mList;
-    List<Integer> floorList;
+    List<Integer> indexList;
+    List<FloorBean.DataBean> dataBeanList;
     int Devflag;//0设备 1串口
 
     public FloorAdapter(Context context) {
         this.context = context;
     }
 
-    public void updateData(List<Integer> list, List<Integer> floorList, int flag) {
-        this.mList = list;
-        this.floorList = floorList;
+    public void updateData(List<FloorBean.DataBean> list, List<Integer> floorList, int flag) {
+        this.dataBeanList = list;
+        this.indexList = floorList;
         this.Devflag = flag;
     }
 
 
     @Override
     public int getCount() {
-        if (mList != null)
-            return mList.size();
+        if (dataBeanList != null)
+            return dataBeanList.size();
         else return 0;
     }
 
     @Override
     public Object getItem(int i) {
-        if (mList != null && mList.size() > i) {
-            return mList.get(i);
+        if (dataBeanList != null && dataBeanList.size() > i) {
+            return dataBeanList.get(i);
         }
         return null;
     }
@@ -73,21 +75,21 @@ public class FloorAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.text.setText(mList.get(position) + "");
+        holder.text.setText(dataBeanList.get(position).getNumberFloor() + "");
         holder.text.setTextColor(Color.parseColor("#666666"));
         holder.cardView.setBackground(context.getDrawable(R.drawable.radius_font));
 
-        if (floorList.size() != 0) {
+        if (indexList.size() != 0) {
             if (Devflag == 0) {
-                for (int i = 0; i < floorList.size(); i++) {
-                    if (floorList.get(i) == mList.get(position)) {
+                for (int i = 0; i < indexList.size(); i++) {
+                    if (indexList.get(i) == dataBeanList.get(position).getNumberFloor()) {
                         holder.text.setTextColor(Color.parseColor("#ff6510"));
                         holder.cardView.setBackground(context.getDrawable(R.drawable.radius_floor));
                     }
                 }
             } else {
-                for (int i = 0; i < floorList.size(); i++) {
-                    if (floorList.get(i) == position) {
+                for (int i = 0; i < indexList.size(); i++) {
+                    if (indexList.get(i) == position) {
                         holder.text.setTextColor(Color.parseColor("#ff6510"));
                         holder.cardView.setBackground(context.getDrawable(R.drawable.radius_floor));
                     }
